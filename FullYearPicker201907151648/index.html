@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>jQuery 十二个月平铺式日历模板插件</title>
+    <link rel="stylesheet" type="text/css" href="./easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="./easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="./easyui/demo.css">
+    <link rel="stylesheet" type="text/css" href="./css/datePacker.css" />
+    <style>
+        #div1 {
+            min-width: 670px;
+        }
+    </style>
+    <script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="./easyui/jquery.easyui.min.js"></script>
+</head>
+
+<body>
+    <h2>十二个月平铺式日历模板插件</h2>
+    <div id="div1"></div>
+    <p style="color:red;">请您尝试选中某个日期出现红色闪烁框后，点击键盘上下左右键来选择日期</p>
+    <input type="button" value="获取日历当前选中值" />
+    <input type="button" value="更新日历值" />
+    <input type="button" value="设置为指定年份" />
+    <input type="button" value="设置为指定星期不可选" />
+    <input type="button" value="设置为假日" />
+    <input type="button" value="设置为节日" />
+    <p>
+        <input type="checkbox" name="checkbox" id="checkout1" value="6" /><label for="checkout1">设置周六为假日</label>
+    </p>
+    <p>
+        <input type="checkbox" name="checkbox" id="checkout2" value="0" /><label for="checkout2">设置周日为假日</label>
+    </p>
+    <p>
+        <h3 style="color:red;">不支持拖拽多选，支持禁止和取消，不支持类型标记</h3>
+    </p>
+    <p>当前选中日期集合：<span id="showData"></span></p>
+
+    <script src="js/fullYearPicker.js"></script>
+    <script>
+        //$("[date='2021-11-2']").addClass("selected")
+        //示例
+        $('#div1').fullYearPicker({
+            disable: false, //只读
+            year: "2021", //指定年份
+            // initDate: ["2021-07-20", "2021-07-21", "2021-07-22", "2021-07-23"], //初始化选中日期
+            initDate: [{
+                date: "2021-07-20",
+                dateType: "selected"
+            }, {
+                date: "2021-07-21",
+                dateType: "lawday"
+            }, {
+                date: "2021-07-22",
+                dateType: "tradeday"
+            }, {
+                date: "2021-07-23",
+                dateType: "festivalday"
+            }], //初始化选中日期
+            yearScale: {
+                min: 1949,
+                max: 2100
+            }, //初始化日历范围
+            // disabledDay: '0',
+            format: "YYYY-MM-DD", //日期格式化  YYYY-MM-DD  YYYY-M-D
+            cellClick: function(dateStr, isDisabled) { //当前选中日期回调函数
+                // alert(isDisabled)
+                // alert(dateStr)
+
+
+                // var labelType = prompt('请选择label');
+                // console.log('labelType', labelType)
+                // var labelZh = ''
+                // if (labelType == 1) {
+                //     labelZh = 'lawday'
+                // } else if (labelType == 2) {
+                //     labelZh = 'tradeday'
+                // } else if (labelType == 3) {
+                //     labelZh = 'festivalday'
+                // } else {
+                //     labelZh = 'selected'
+                // }
+
+                // // $('#div1').fullYearPicker('setColors', {
+                // //     // defaultColor: '#f00',
+                // //     dc: [{
+                // //         d: dateStr,
+                // //         c: labelType
+                // //     }]
+                // // });
+                // $('#div1').fullYearPicker('setLabel', {
+                //     dt: [{
+                //         d: dateStr,
+                //         t: labelZh
+                //     }]
+                // });
+
+            },
+            choose: function(a) { //实时获取所有选中的日期的回调函数
+                $("#showData").text(JSON.stringify(a));
+            }
+        });
+        $('td').tooltip({
+            position: 'right',
+            showEvent: 'click',
+            content: $('<div></div>'),
+            onUpdate: function(content) {
+                content.panel({
+                    width: 200,
+                    border: false,
+                    // title: 'Login',
+                    href: 'option.html'
+                });
+            },
+            onShow: function() {
+                var t = $(this);
+                t.tooltip('tip').unbind().bind('mouseenter', function() {
+                    t.tooltip('show');
+                }).bind('mouseleave', function() {
+                    t.tooltip('hide');
+                });
+            }
+        })
+
+        function test() {
+            var opt = $("input[name='date']:checked").val()
+            console.log("opt", typeof(opt))
+            if (opt != "underfined") {
+                console.log("opt", opt)
+            }
+            // console.log("labelType", $("input[name='date']:checked").val())
+        }
+        $('input').click(function() {
+            switch (this.value) {
+                case '获取日历当前选中值':
+                    alert($('#div1').fullYearPicker('getSelected'));
+                    break;
+                case '更新日历值':
+                    $('#div1').fullYearPicker('acceptChange');
+                    alert('更新值成功，切换年份查看效果');
+                    break;
+                case '设置为指定年份':
+                    var year = prompt('请输入4位年份数字');
+                    if (/^\d{4}$/.test(year)) $('#div1').fullYearPicker('setYear', parseInt(year));
+                    else alert('年份为4位数字！');
+                    break;
+                case '设置为指定星期不可选':
+                    var day = prompt('请输入0~6的数字，不输入则设置所有星期可选');
+                    if (/^[0-6]*$/.test(day)) $('#div1').fullYearPicker('setDisabledDay', day);
+                    else alert('请输入0~6的数字！');
+                    // case '设置为假日':
+                    //     var
+            }
+        });
+        $('input[name="checkbox"]').click(function() {
+            var id_array = [];
+            $('input[name="checkbox"]:checked').each(function() {
+                id_array.push($(this).val()); //向数组中添加元素  
+            });
+            console.log("id_array", id_array)
+                // $('#div1').fullYearPicker('setDisabledDay', id_array.join(","));
+            $('#div1').fullYearPicker('setLawday', {
+                date: id_array.join(","),
+                label: 'lawday'
+            });
+            // $('#div1').fullYearPicker('setLabel', {
+            //         dt: [{
+            //             d: dateStr,
+            //             t: labelZh
+            //         }]
+            //     });
+        })
+    </script>
+</body>
+
+</html>

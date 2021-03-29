@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="IE=9" />
+    <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/font-awesome.4.6.0.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/amazeui.min.css">
+    <link rel="stylesheet" href="css/timedropper.css">
+</head>
+
+<body>
+    <div id="div1"></div>
+    <!-- <input type="button" value="设置周六为假日" />
+    <input type="button" value="设置周日为假日" /> -->
+    <p>
+        <input type="checkbox" name="checkbox" id="checkout1" value="6" /><label for="checkout1">设置周六为假日</label>
+    </p>
+    <p>
+        <input type="checkbox" name="checkbox" id="checkout2" value="0" /><label for="checkout2">设置周日为假日</label>
+    </p>
+
+    <p>
+        <h3 style="color:red;">支持拖拽多选，不支持禁止和取消</h3>
+    </p>
+    <!--录入信息口-->
+    <div class="am-modal am-modal-no-btn  hd_info_modal" tabindex="-1" id="calendar-modal-1">
+        <div class="am-modal-dialog radius">
+            <div class="am-modal-hd">新增例外
+                <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+            </div>
+            <div class="am-modal-bd">
+                <div class="am-margin-sm">
+                    <form action="" class="am-form am-form-inline">
+                        <div class="hd-work-type">
+                            <div class="hd-work-block">
+                                <label class="hd-type-label">类型:</label>
+                                <div class="hd-type-select">
+                                    <select data-am-selected class="am-u-sm-10" id="hd-type-option">
+                                        <option value="workday" selected>工作时间</option>
+                                        <!-- <option value="freeday" >非工作日</option> -->
+                                        <option value="festivalday" >节日</option>
+                                        <option value="lawday" >假日</option>
+                                        <option value="tradeday" >调休日</option>
+                                        <!-- festival -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="stone"></div>
+
+                        </div>
+                        <div class="hd-work-date" style="display: none">
+                            <div class="hd-work-block">
+                                <label for="hd-start-date" class="am-form-label">时间:</label>
+                                <div class="am-form-group am-form-icon">
+                                    <i class="am-icon-calendar"></i>
+                                    <input id="hd-start-date" type="text" class="am-form-field" placeholder="开始日期" data-am-datepicker readonly required>
+                                </div>
+                            </div>
+                            <div class="hd-work-block">
+                                <label for="hd-end-date" class="am-form-label">至</label>
+                                <div class="am-form-group am-form-icon">
+                                    <i class="am-icon-calendar"></i>
+                                    <input id="hd-end-date" type="text" class="am-form-field" placeholder="结束日期" data-am-datepicker readonly required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hd-work-btns">
+                            <button type="button" class="am-btn am-btn-secondary" id="calendar_confirm_btn">添加</button>
+                            <button type="button" class="am-btn am-btn-default" onClick="close_modal();">取消</button>
+                        </div>
+                        <div class="stone"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p>当前选中日期集合：<span id="showData"></span></p>
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/amazeui.min.js" charset="utf-8"></script>
+<script src="js/timedropper.js" charset="utf-8"></script>
+<script src="js/calendar.js" charset="utf-8"></script>
+<script type="text/javascript">
+    /*日历*/
+
+    //开始
+    $("#div1").fullYearPicker({
+        disabledDay: '',
+        // value: ['2021-6-25', '2021-8-26'],
+        value: [{
+            date: "2021-07-20",
+            dateType: "selected"
+        }, {
+            date: "2021-07-21",
+            dateType: "lawday"
+        }, {
+            date: "2021-07-22",
+            dateType: "tradeday"
+        }, {
+            date: "2021-07-23",
+            dateType: "tradeday"
+        }],
+        initDate: [{
+            date: "2021-07-20",
+            dateType: "selected"
+        }, {
+            date: "2021-07-21",
+            dateType: "lawday"
+        }, {
+            date: "2021-07-22",
+            dateType: "tradeday"
+        }, {
+            date: "2021-07-23",
+            dateType: "tradeday"
+        }], //初始化选中日期
+        disabledDay: '0',
+        format: "YYYY-MM-DD", //日期格式化  YYYY-MM-DD  YYYY-M-D
+        cellClick: function(dateStr, isDisabled) { //当前选中日期回调函数
+            // alert(isDisabled)
+            // alert(dateStr)
+            console.log('dateStr', dateStr)
+        },
+        choose: function(a) { //实时获取所有选中的日期的回调函数
+            $("#showData").text(JSON.stringify(a));
+        }
+    });
+    // }
+
+    function open_modal(start_date, end_date) {
+        var year = $("#cen_year").text();
+        start_date = year + "-" + start_date;
+        end_date = year + "-" + end_date;
+        if (start_date != null) {
+            setDateInfo(start_date, end_date);
+        }
+
+        $("#calendar-modal-1").modal();
+        $(".month-container .selected").removeClass("selected");
+    }
+
+    //设置开始日期和结束日期
+    function setDateInfo(start_date, end_date) {
+        $("#hd-start-date").datepicker('setValue', start_date);
+        $("#hd-end-date").datepicker('setValue', end_date);
+    }
+
+
+
+    function close_modal() {
+        $("#calendar-modal-1").modal('close');
+
+    }
+    var disabledArr = []
+    $('input').click(function() {
+        var id_array = [];
+        $('input[name="checkbox"]:checked').each(function() {
+            id_array.push($(this).val()); //向数组中添加元素  
+        });
+        // console.log("id_array", id_array)
+        $('#div1').fullYearPicker('setDisabledDay', id_array.join(","));
+    })
+</script>
+
+</html>
